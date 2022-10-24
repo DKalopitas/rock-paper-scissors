@@ -1,6 +1,6 @@
 function getComputerChoice() {
     let choice = Math.floor(Math.random() * 3);
-    switch(choice) {
+    switch (choice) {
         case 0:
             return "Rock";
         case 1:
@@ -11,46 +11,44 @@ function getComputerChoice() {
 }
 
 function playRound(playerSelection) {
-    const content = document.querySelector(".content");
-
-    if(document.querySelectorAll(".result").length > 0) {
-        const result = document.querySelector(".result");
-        content.removeChild(result);
-    }
-
     let computerSelection = getComputerChoice();
     playerSelection = playerSelection.toLowerCase();
     let firstLetter = playerSelection.substr(0, 1);
     playerSelection = playerSelection.replace(firstLetter, firstLetter.toUpperCase());
     let winner;
 
-    const result = document.createElement('div');
-    result.classList.add("result");
+    const content = document.querySelector('.content');
 
-    if(playerSelection === computerSelection) {
+    if (document.querySelector('.result') === null) {
+        const resultDiv = document.createElement('div');
+        resultDiv.classList.add('result');
+        content.appendChild(resultDiv);
+    }
+    const result = document.querySelector('.result');
+
+    if (playerSelection === computerSelection) {
         result.textContent = "Tie!";
-        content.appendChild(result);
         getScore(winner);
         return;
     }
 
-    switch(playerSelection) {
+    switch (playerSelection) {
         case "Rock":
-            if(computerSelection === "Scissors") {
+            if (computerSelection === "Scissors") {
                 winner = "player";
             } else {
                 winner = "computer";
             }
             break;
         case "Paper":
-            if(computerSelection === "Rock") {
+            if (computerSelection === "Rock") {
                 winner = "player";
             } else {
                 winner = "computer";
             }
             break;
         case "Scissors":
-            if(computerSelection === "Paper") {
+            if (computerSelection === "Paper") {
                 winner = "player";
             } else {
                 winner = "computer";
@@ -58,13 +56,14 @@ function playRound(playerSelection) {
             break;
     }
 
-    if(winner === "player") {
+    if (winner === "player") {
         result.textContent = `You Win! ${playerSelection} beats ${computerSelection}`;
     } else {
         result.textContent = `You Lose! ${computerSelection} beats ${playerSelection}`;
     }
-    content.appendChild(result);
     getScore(winner);
+
+    return;
 }
 
 let playerScore = 0;
@@ -72,29 +71,34 @@ let computerScore = 0;
 let points = 0;
 
 function getScore(winner) {
-    const content = document.querySelector(".content");
     points++;
 
-    if(winner === "player") {
+    if (winner === "player") {
         playerScore++;
-    } else if(winner === "computer") {
+    } else if (winner === "computer") {
         computerScore++;
     }
 
-    if(document.querySelectorAll(".score").length > 0) {
-        const score = document.querySelector(".score");
-        content.removeChild(score);
+    const content = document.querySelector(".content");
+
+    if (document.querySelector('.score') === null) {
+        const scoreDiv = document.createElement('div');
+        scoreDiv.classList.add('score');
+        content.appendChild(scoreDiv);
     }
-    const score = document.createElement('div');
-    score.classList.add("score");
-    score.textContent = `${playerScore} - ${computerScore}`;
-    content.appendChild(score);
     
-    if(points === 5) {
+    const score = document.querySelector('.score');
+    score.textContent = `${playerScore} - ${computerScore}`;
+
+    if (points === 1) {
+        document.getElementById('par').style.opacity = '0';
+    }
+    
+    if (points === 5) {
         let str;
-        if(playerScore === computerScore) {
+        if (playerScore === computerScore) {
             str = "You tied the computer!";
-        } else if(playerScore > computerScore){
+        } else if (playerScore > computerScore){
             str = "You won the computer!";
         } else {
             str = "You lost to the computer!";
@@ -104,6 +108,8 @@ function getScore(winner) {
         finalRes.textContent = str;
         const body = document.querySelector('body');
         body.appendChild(finalRes);
+        document.getElementById('blur').style.pointerEvents = 'none';
+        setTimeout(restart, 1500);
     }
     return;
 }
@@ -114,22 +120,15 @@ function restart() {
     computerScore = 0;
 
     const content = document.querySelector('.content');
-    const score = document.querySelector('.score');
-    content.removeChild(score);
+    const button = document.querySelector('#replayButton');
+    button.classList.toggle('active');
+    content.classList.toggle('active');
 
-    const body = document.querySelector('body');
-    const finalRes = document.querySelector('.finalRes');
-    body.removeChild(finalRes);
-
-    /*const button = document.createElement('button');
-    button.classList.add('replay');
-    button.textContent = 'Play Again';
-    const body = document.querySelector('body');
-    body.appendChild(button);*/
     return;
 }
 
 function removeTransition(e) {
+    console.log(e);
     if (e.propertyName !== 'transform') {
       return;
     }
@@ -142,27 +141,33 @@ buttons.forEach(btn => btn.addEventListener('transitionend', removeTransition));
 const rock = document.querySelector(".rock");
 rock.addEventListener("click", ()=> {
         rock.classList.add('clicked');
-        if(points > 4) {
-            restart();
-        }
         playRound('Rock');
-    }
-);
+});
 const paper = document.querySelector(".paper");
 paper.addEventListener("click", ()=> {
     paper.classList.add('clicked');
-    if(points > 4) {
-        restart();
-    }
     playRound('Paper');
-    }
-);
+});
 const scissors = document.querySelector(".scissors");
 scissors.addEventListener("click", ()=> {
     scissors.classList.add('clicked');
-    if(points > 4) {
-        restart();
-    }
     playRound('Scissors');
-    }
-);
+});
+
+const replayButton = document.querySelector('#replayButton');
+replayButton.addEventListener('click', ()=> {
+    replayButton.classList.add('clicked');
+    const body = document.querySelector('body');
+    const content = document.querySelector('.content');
+    const result = document.querySelector('.result');
+    const score = document.querySelector('.score');
+    const finalRes = document.querySelector('.finalRes');
+    setTimeout(()=> {
+        body.removeChild(finalRes);
+        content.removeChild(result);
+        content.removeChild(score);
+        content.classList.toggle('active');
+        replayButton.classList.toggle('active');
+    }, 200);
+    document.getElementById('blur').style.pointerEvents = 'all';
+});
