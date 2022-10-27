@@ -17,17 +17,11 @@ function playRound(playerSelection) {
     playerSelection = playerSelection.replace(firstLetter, firstLetter.toUpperCase());
     let winner;
 
-    const content = document.querySelector('.content');
-
-    if (document.querySelector('.result') === null) {
-        const resultDiv = document.createElement('div');
-        resultDiv.classList.add('result');
-        content.appendChild(resultDiv);
-    }
     const result = document.querySelector('.result');
 
     if (playerSelection === computerSelection) {
         result.textContent = "Tie!";
+        document.getElementById('temp').style.opacity = '1';
         getScore(winner);
         return;
     }
@@ -61,6 +55,7 @@ function playRound(playerSelection) {
     } else {
         result.textContent = `You Lose! ${computerSelection} beats ${playerSelection}`;
     }
+    document.getElementById('temp').style.opacity = '1';
     getScore(winner);
 
     return;
@@ -78,21 +73,9 @@ function getScore(winner) {
     } else if (winner === "computer") {
         computerScore++;
     }
-
-    const content = document.querySelector(".content");
-
-    if (document.querySelector('.score') === null) {
-        const scoreDiv = document.createElement('div');
-        scoreDiv.classList.add('score');
-        content.appendChild(scoreDiv);
-    }
     
     const score = document.querySelector('.score');
     score.textContent = `${playerScore} - ${computerScore}`;
-
-    if (points === 1) {
-        document.getElementById('par').style.opacity = '0';
-    }
     
     if (points === 5) {
         let str;
@@ -103,11 +86,8 @@ function getScore(winner) {
         } else {
             str = "You lost to the computer!";
         }
-        const finalRes = document.createElement('div');
-        finalRes.classList.add('finalRes');
+        const finalRes = document.querySelector('.finalRes');
         finalRes.textContent = str;
-        const body = document.querySelector('body');
-        body.appendChild(finalRes);
         document.getElementById('blur').style.pointerEvents = 'none';
         setTimeout(restart, 1500);
     }
@@ -119,10 +99,14 @@ function restart() {
     playerScore = 0;
     computerScore = 0;
 
-    const content = document.querySelector('.content');
-    const button = document.querySelector('#replayButton');
-    button.classList.toggle('active');
-    content.classList.toggle('active');
+    const score = document.querySelector('.score');
+    document.getElementById('temp').style.opacity = '0';
+    score.textContent = `${playerScore} - ${computerScore}`;
+
+    const blur = document.querySelector('#blur');
+    const replayModal = document.querySelector('#replayModal');
+    blur.classList.toggle('active');
+    replayModal.classList.toggle('active');
 
     return;
 }
@@ -157,17 +141,11 @@ scissors.addEventListener("click", ()=> {
 const replayButton = document.querySelector('#replayButton');
 replayButton.addEventListener('click', ()=> {
     replayButton.classList.add('clicked');
-    const body = document.querySelector('body');
-    const content = document.querySelector('.content');
-    const result = document.querySelector('.result');
-    const score = document.querySelector('.score');
-    const finalRes = document.querySelector('.finalRes');
+    const replayModal = document.querySelector('#replayModal');
+    const blur = document.querySelector('#blur');
     setTimeout(()=> {
-        body.removeChild(finalRes);
-        content.removeChild(result);
-        content.removeChild(score);
-        content.classList.toggle('active');
-        replayButton.classList.toggle('active');
+        replayModal.classList.toggle('active');
+        blur.classList.toggle('active');
     }, 200);
     document.getElementById('blur').style.pointerEvents = 'all';
 });
